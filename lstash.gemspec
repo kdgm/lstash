@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Lstash::VERSION
   spec.authors       = ["Klaas Jan Wierenga"]
   spec.email         = ["k.j.wierenga@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Count or grep raw log messages in a specified time range from a logstash elasticsearch server.}
+  spec.summary       = %q{The lstash gem allows you to count or grep raw log messages in a specific time range from a logstash elasticsearch server. }
+  spec.homepage      = "http://bitbucket.org/kjwierenga/lstash"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -26,4 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "autotest-standalone"
   spec.add_development_dependency "autotest-fsevent"
   spec.add_development_dependency "timecop"
+
+  spec.add_dependency "elasticsearch", "~> 0.4"
+  spec.add_dependency "hashie"
+  spec.add_dependency "thor"
 end
