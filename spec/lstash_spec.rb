@@ -1,11 +1,8 @@
 require 'spec_helper'
+require 'lstash/cli'
 
 describe Lstash do
   it 'should have a version number' do
-    Lstash::VERSION.should_not be_nil
-  end
-
-  it 'should do something useful' do
-    false.should be_true
+    expect(Lstash::VERSION).not_to be nil
   end
 end
