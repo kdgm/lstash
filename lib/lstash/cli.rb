@@ -18,7 +18,7 @@ module Lstash
 
     long_desc <<-LONGDESC
       Grep log messages matching the QUERY from Logstash in ascending timestamp order
-      and output to stdout.
+      and output to stdout. QUERY can use Apache Lucene query parser syntax.
 
       Example to grep HAProxy log messages from the beginning of this month upto now
 
@@ -35,6 +35,7 @@ module Lstash
 
     long_desc <<-LONGDESC
       Count log messages matching the QUERY from Logstash and output this count to stdout.
+      QUERY can use Apache Lucene query parser syntax.
 
       Example to count the number of HAProxy log messages in yesterdays month.
 
