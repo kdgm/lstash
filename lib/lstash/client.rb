@@ -1,7 +1,6 @@
 require 'logger'
 require 'date'
 require 'hashie'
-require 'elasticsearch'
 
 class NullLogger < Logger
   def initialize(*args); end
@@ -19,8 +18,8 @@ module Lstash
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
 
-      @logger    = options[:logger] || (options[:verbose] ? verbose_logger : NullLogger.new)
       @es_client = es_client
+      @logger    = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
     end
 
     def count(query)
@@ -82,8 +81,8 @@ module Lstash
       Hashie::Mash.new @es_client.clear_scroll(scroll_params)
     end
 
-    def verbose_logger
-      logger = Logger.new(STDOUT)
+    def debug_logger
+      logger = Logger.new(STDERR)
       logger.formatter = proc do |severity, datetime, progname, msg|
         "#{msg}\n"
       end
