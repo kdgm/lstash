@@ -1,5 +1,5 @@
 #ruby-gemset=lstash
-ruby '1.9.3'
+#ruby-version='1.9.3'
 
 source 'https://rubygems.org'
 
