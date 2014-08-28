@@ -1,6 +1,8 @@
 # lstash
 
-Lstash is a gem and command line utility to count or grep log messages in a certain time frame from a Logstash Elasticsearch server. 
+[![Build Status](https://travis-ci.org/kjwierenga/lstash.png)](https://travis-ci.org/kjwierenga/lstash)
+
+Lstash is a gem and command line utility to count or grep log messages in a certain time frame from a Logstash Elasticsearch server.
 
 ## Installation
 
