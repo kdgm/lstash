@@ -1,5 +1,5 @@
 gemfile:
-  - gemfiles/Gemfile.generic
+  - gemfiles/Gemfile-generic
 language: ruby
 rvm:
   - 1.9.3
