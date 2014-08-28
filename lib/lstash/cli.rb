@@ -1,5 +1,6 @@
 # external dependencies
 require 'thor'
+require 'elasticsearch'
 
 # local files we need
 require 'lstash/query'

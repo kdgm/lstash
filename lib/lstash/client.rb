@@ -1,7 +1,6 @@
 require 'logger'
 require 'date'
 require 'hashie'
-require 'elasticsearch'
 
 class NullLogger < Logger
   def initialize(*args); end
