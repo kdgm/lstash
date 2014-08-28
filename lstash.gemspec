@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Lstash::VERSION
   spec.authors       = ["Klaas Jan Wierenga"]
   spec.email         = ["k.j.wierenga@gmail.com"]
-  spec.description   = %q{Count or grep raw log messages in a specified time range from a logstash elasticsearch server.}
-  spec.summary       = %q{The lstash gem allows you to count or grep raw log messages in a specific time range from a logstash elasticsearch server. }
+  spec.description   = %q{Count or grep log messages in a specified time range from a Logstash Elasticsearch server.}
+  spec.summary       = %q{The lstash gem allows you to count or grep log messages in a specific time range from a Logstash Elasticsearch server. }
   spec.homepage      = "http://bitbucket.org/kjwierenga/lstash"
   spec.license       = "MIT"
 
