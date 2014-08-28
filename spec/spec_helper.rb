@@ -6,6 +6,7 @@ require 'rspec/its'
 require 'timecop'
 
 ENV['ES_URL'] = nil
+ENV['TZ'] = 'Europe/Amsterdam' # Test in a specific timezone.
 
 RSpec.configure do |config|
   config.order = 'random'
