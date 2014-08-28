@@ -13,6 +13,7 @@ module Lstash
     class_option :to,     :banner => 'end of time range',   :aliases => '-t', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
     class_option :anchor, :banner => 'anchor date/time',    :aliases => '-a', :desc => "used as reference date for firstday"
     class_option :es_url, :banner => 'Elasticsearch endpoint for Logstash', :aliases => '-e', :desc => "or ES_URL environment variable"
+    class_option :debug,  :banner => 'debug log to stderr', :aliases => '-d', :type => :boolean
 
     long_desc <<-LONGDESC
       Grep log messages matching the QUERY from Logstash in ascending timestamp order
@@ -39,7 +40,6 @@ module Lstash
         lstash count 'program:haproxy' --from firstday --to today --anchor yesterday
     LONGDESC
     desc "count QUERY", "count number of log messages matching the QUERY"
-    option :verbose, :banner => 'verbose output', :aliases => '-v', :type => :boolean
     def count(query_string)
       run_command(query_string) do |es_client, query|
         count  = Lstash::Client.new(es_client, options).count(query)
