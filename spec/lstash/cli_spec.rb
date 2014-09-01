@@ -79,7 +79,7 @@ describe Lstash::CLI do
               Time.parse('2014-07-01').to_i*1000,
               Time.parse('2014-08-01').to_i*1000
             ])
-          })
+          }).exactly(32).times.and_return({count:1})
 
           Lstash::CLI.start(args)
         end
@@ -100,7 +100,7 @@ describe Lstash::CLI do
               Time.parse('2014-07-31').to_i*1000,
               Time.parse('2014-08-01').to_i*1000
             ])
-          }).and_return([{count:1}])
+          }).exactly(2).times.and_return({count:1})
 
           Lstash::CLI.start(args)
         end
