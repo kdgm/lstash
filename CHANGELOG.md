@@ -1,3 +1,9 @@
+### 0.0.8 / 2014-09-01
+
+Bug Fixes
+
+* Require missing 'uri' (instead of using typhoed or patron HTTP transport clients).
+
 ### 0.0.7 / 2014-09-01
 
 Bug Fixes
