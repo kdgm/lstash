@@ -1,3 +1,9 @@
+### v0.0.6 / 2014-09-01
+
+Bug Fixes
+
+* Pushing version 0.0.5 failed and it was yanked from rubygems.org. Need to push new version 0.0.6.
+
 ### 0.0.5 / 2014-09-01
 
 Bug Fixes
