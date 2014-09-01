@@ -1,4 +1,4 @@
-### Next Release
+### 0.0.5 / 2014-09-01
 
 Bug Fixes
 
