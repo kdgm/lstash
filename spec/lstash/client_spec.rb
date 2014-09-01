@@ -26,7 +26,7 @@ describe Lstash::Client do
     end
 
     context "grep" do
-      let(:query) { double('query') }
+      let(:query) { double('query', time_range: OpenStruct.new) }
       
       it "should return the messages matching the query" do
         allow(query).to receive(:indices).and_return (['logstash-2014-08-01', 'logstash-2014-08-02'])
