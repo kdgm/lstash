@@ -1,4 +1,10 @@
-### v0.0.6 / 2014-09-01
+### 0.0.7 / 2014-09-01
+
+Bug Fixes
+
+* Use Typhoed transport instead of Patron. The C-extension of Patron doesn't play nice with JRuby.
+
+### 0.0.6 / 2014-09-01
 
 Bug Fixes
 

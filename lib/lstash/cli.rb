@@ -1,6 +1,7 @@
 # external dependencies
 require 'thor'
-require 'patron' # use Patron HTTP library for optimal performance
+require 'typhoeus'
+require 'typhoeus/adapters/faraday'
 require 'elasticsearch'
 
 # local files we need
