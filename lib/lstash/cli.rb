@@ -1,7 +1,6 @@
 # external dependencies
 require 'thor'
-require 'typhoeus'
-require 'typhoeus/adapters/faraday'
+require 'uri'
 require 'elasticsearch'
 
 # local files we need

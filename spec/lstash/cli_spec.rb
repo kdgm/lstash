@@ -19,6 +19,18 @@ describe Lstash::CLI do
 
   context "count" do
 
+    context "with full URI" do
+      let(:args) { %w(count "*" --es-url http://localhost:9200) }
+      it "should succeed" do
+        client = double('client')
+
+        allow(Lstash::Client).to receive(:new).and_return(client)
+        allow(client).to receive(:count).and_return(100)
+
+        expect { Lstash::CLI.start(args) }.not_to raise_error
+      end
+    end
+
     context "with valid arguments" do
       let(:args) { %w(count "program:haproxy" --es-url localhost) }
 
