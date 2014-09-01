@@ -1,5 +1,6 @@
 # external dependencies
 require 'thor'
+require 'patron' # use Patron HTTP library for optimal performance
 require 'elasticsearch'
 
 # local files we need

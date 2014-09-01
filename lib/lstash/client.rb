@@ -34,9 +34,9 @@ module Lstash
     end
 
     def grep(query)
+      @logger.debug "time range: [%s..%s]" % [query.time_range.from, query.time_range.to]
+
       query.indices.each do |index|
-        @logger.debug "grep #{index}"
-        
         grep_messages(index, query) do |message|
           yield message if block_given?
         end
@@ -47,37 +47,37 @@ module Lstash
 
     def count_messages(index, query)
       result = Hashie::Mash.new @es_client.send(:count,
-        {
-          index: index,
-          body:  query.body[:query]
-        }
+        index: index,
+        body:  query.body[:query]
       )
-      @logger.debug "#{index}: #{result['count']} "
+      @logger.debug "count #{index}: #{result['count']} "
       result['count']
     end
 
     def grep_messages(index, query)
-      result = nil
+      messages = nil
       scroll_params = {}
       offset = 0
-      while (result.nil? || result.hits.hits.count > 0) do
-        method = (result.nil? ? :search : :scroll)
-        result = Hashie::Mash.new @es_client.send(method,
-          {
-            index: index,
-            scroll: '10m',
-            body: query.body.merge(from: offset, size: PER_PAGE),
-          }.merge(scroll_params)
-        )
-        @logger.debug "Count #{result.hits.hits.count}"
+      method = :search
+      while (messages.nil? || messages.count > 0) do
+        result = Hashie::Mash.new @es_client.send(method, {
+          index: index,
+          scroll: '10m',
+          body: query.body.merge(from: offset, size: PER_PAGE),
+        }.merge(scroll_params))
 
-        offset += result.hits.hits.count
+        messages = result.hits.hits
+
+        offset += messages.count
         scroll_params = {scroll_id: result._scroll_id}
 
-        result.hits.hits.each do |h|
+        messages.each do |h|
           yield h._source.message if block_given?
         end
+
+        method = :scroll
       end
+      @logger.debug "grep #{index}: #{offset}"
       Hashie::Mash.new @es_client.clear_scroll(scroll_params)
     end
 
