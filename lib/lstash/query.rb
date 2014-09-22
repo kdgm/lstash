@@ -38,6 +38,8 @@ module Lstash
       {
         sort: sort_order,
 
+        fields: %w(message),
+
         # return in order of ascending timestamp
         query: {
           filtered: {

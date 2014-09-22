@@ -1,3 +1,11 @@
+### 0.0.9 / 2014-09-22
+
+Enhancements
+
+* We only every print the 'message' field. To optimize we only query for the 'message' field
+  to be returned in the results. This should cut down the size of the returned json documents
+  which could potentially be (very) large.
+
 ### 0.0.8 / 2014-09-01
 
 Bug Fixes
