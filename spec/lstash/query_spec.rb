@@ -107,6 +107,7 @@ describe Lstash::Query do
     context "body" do
       its(:body) { should eq ({
         :sort => [{"@timestamp"=>{:order=>"asc"}}],
+        :fields => %w(message),
         :query => {:filtered=>{
           :query => { :bool => { :should => [ { :query_string => { :query=>"*" }}]}},
           :filter=> { :bool => { :must   => [ { :range => { "@timestamp" => { :from => 1407016800000, :to => 1407074073000}}}]}}}}

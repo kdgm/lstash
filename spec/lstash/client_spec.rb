@@ -52,7 +52,7 @@ describe Lstash::Client do
   def hits(messages)
     {
       hits: {
-        hits: messages.map { |m| { _source: { message: m }}}
+        hits: messages.map { |m| { fields: { message: m }}}
       }
     }
   end

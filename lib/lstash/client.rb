@@ -72,7 +72,7 @@ module Lstash
         scroll_params = {scroll_id: result._scroll_id}
 
         messages.each do |h|
-          yield h._source.message if block_given?
+          yield h.fields.message if block_given?
         end
 
         method = :scroll
