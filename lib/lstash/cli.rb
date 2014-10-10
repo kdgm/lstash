@@ -9,6 +9,8 @@ require 'lstash/client'
 
 module Lstash
 
+  TRANSPORT_REQUEST_TIMEOUT = 60.freeze # 1 minute request timeout
+
   class CLI < Thor
 
     class_option :from,   :banner => 'start of time range', :aliases => '-f', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
@@ -55,7 +57,8 @@ module Lstash
     def run_command(query_string)
       es_client = ::Elasticsearch::Client.new(
         url: options[:es_url] || ENV['ES_URL'] || 'localhost',
-        log: !!ENV['DEBUG']
+        log: !!ENV['DEBUG'],
+        transport_options: { request: { timeout: TRANSPORT_REQUEST_TIMEOUT } }
       )
       query  = Lstash::Query.new(query_string, options)
 
