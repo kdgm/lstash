@@ -65,7 +65,7 @@ module Lstash
       yield es_client, query
 
     rescue Exception => e
-      raise Thor::Error.new(e.message)
+      options[:debug] ? raise(e) : raise(Thor::Error.new(e.message))
     end
 
     protected
