@@ -9,8 +9,8 @@ module Lstash
     class FormatError < StandardError; end
     class QueryMissing < StandardError; end
 
-    LOGSTASH_PREFIX = 'logstash-'
-    WILDCARD_QUERY = '*'
+    LOGSTASH_PREFIX = 'logstash-'.freeze
+    WILDCARD_QUERY  = '*'.freeze
 
     def initialize(query = nil, arguments = {})
       @query = query
