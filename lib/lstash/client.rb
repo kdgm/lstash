@@ -72,6 +72,7 @@ module Lstash
         scroll_params = {scroll_id: result._scroll_id}
 
         messages.each do |h|
+          next if h.fields.nil?
           yield h.fields.message if block_given?
         end
 
