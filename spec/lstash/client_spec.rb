@@ -12,38 +12,45 @@ describe Lstash::Client do
 
   context "with query" do
 
-    let(:query) { double('query', time_range: OpenStruct.new) }
-
     context "count" do
       it "should return number of messages matching query" do
-        allow(query).to receive(:indices).and_return (['logstash-2014-08-01', 'logstash-2014-08-02'])
-        allow(query).to receive(:body).and_return ({})
 
-        allow(es_client).to receive(:count).and_return({'count' => 100},{'count' => 100})
+        query = Lstash::Query.new("*", from: Time.parse("2014-10-10 00:00"), to: Time.parse("2014-10-10 07:00"))
 
-        expect(subject.count(query)).to eq 200
+        allow(es_client).to receive(:count).and_return(
+          { 'count' => 100 },
+          { 'count' => 200 },
+          { 'count' => 300 },
+          { 'count' => 400 },
+          { 'count' => 500 },
+          { 'count' => 600 },
+          { 'count' => 700 }
+        )
+
+        expect(subject.count(query)).to eq 2800
       end
     end
 
     context "grep" do
-      let(:query) { double('query', time_range: OpenStruct.new) }
-      
       it "should return the messages matching the query" do
-        allow(query).to receive(:indices).and_return (['logstash-2014-08-01', 'logstash-2014-08-02'])
-        allow(query).to receive(:body).and_return ({})
-        
-        allow(es_client).to receive(:search).and_return(
-          hits([
-            'this is the first log line',
-            'this is the second log line'
-          ])
+
+        query = Lstash::Query.new("*", from: Time.parse("2014-10-10 00:00"), to: Time.parse("2014-10-10 07:00"))
+      
+        expect(es_client).to receive(:search).and_return(
+          hits(%w(1)),
+          hits(%w(2 2)),
+          hits(%w(3 3 3)),
+          hits(%w(4 4 4 4)),
+          hits(%w(5 5 5 5 5)),
+          hits(%w(6 6 6 6 6 6)),
+          hits(%w(7 7 7 7 7 7 7))
         )
 
         allow(es_client).to receive(:scroll).and_return(hits([]))
 
         allow(es_client).to receive(:clear_scroll)
 
-        subject.grep(query)
+        expect(subject.grep(query)).to eq 28
       end
     end
 
