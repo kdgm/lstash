@@ -9,6 +9,13 @@ end
 
 describe Lstash::CLI do
 
+  before(:all) do
+    Timecop.freeze('2014-08-01 14:58')
+  end
+  after(:all) do
+    Timecop.return
+  end
+
   context "options" do
     subject { Lstash::CLI.options(args) }
 
@@ -25,9 +32,12 @@ describe Lstash::CLI do
         client = double('client')
 
         allow(Lstash::Client).to receive(:new).and_return(client)
-        allow(client).to receive(:count).and_return(100)
+        allow(client).to receive(:count).and_return(1000)
 
-        expect { Lstash::CLI.start(args) }.not_to raise_error
+        expect {
+          output = capture_stdout { Lstash::CLI.start(args) }
+          expect(output).to eq "1000\n"
+        }.not_to raise_error
       end
     end
 
@@ -68,52 +78,33 @@ describe Lstash::CLI do
     context "with anchor date" do
       let(:args) { %w(count program:haproxy --from firstday --to today --anchor yesterday) }
 
-      it "should succeed" do
-        Timecop.freeze('2014-08-01 14:58') do
-          es_client = double('es_client')
+      it "should return correct count" do
+        es_client = double('es_client')
 
-          allow(Elasticsearch::Client).to receive(:new) { es_client }
+        allow(Elasticsearch::Client).to receive(:new) { es_client }
 
-          expect(es_client).to receive(:count).with(satisfy { |args|
-            expect_time_range(args, [
-              Time.parse('2014-07-01').to_i*1000,
-              Time.parse('2014-08-01').to_i*1000
-            ])
-          }).exactly(32).times.and_return({count:1})
+        expect(es_client).to receive(:count).exactly(31 * 24).times.and_return(count:100)
 
-          Lstash::CLI.start(args)
-        end
+        output = capture_stdout { Lstash::CLI.start(args) }
+        expect(output).to match("#{31 * 24 * 100}")
       end
     end
 
     context "without anchor date" do
       let(:args) { %w(count program:haproxy --from yesterday --to today) }
 
-      it "should succeed" do
-        Timecop.freeze('2014-08-01 14:58') do
-          es_client = double('es_client')
+      it "should return correct count" do
+        es_client = double('es_client')
 
-          allow(Elasticsearch::Client).to receive(:new) { es_client }
+        allow(Elasticsearch::Client).to receive(:new) { es_client }
 
-          expect(es_client).to receive(:count).with(satisfy { |args|
-            expect_time_range(args, [
-              Time.parse('2014-07-31').to_i*1000,
-              Time.parse('2014-08-01').to_i*1000
-            ])
-          }).exactly(2).times.and_return({count:1})
+        expect(es_client).to receive(:count).exactly(24).times.and_return(count:100)
 
-          Lstash::CLI.start(args)
-        end
+        output = capture_stdout { Lstash::CLI.start(args) }
+        expect(output).to match("#{24 * 100}")
       end
     end
 
-  end
-
-  private
-
-  def expect_time_range(args, time_range)
-    expect(args[:body][:filtered][:filter][:bool][:must].first[:range]['@timestamp'][:from]).to eq time_range.first
-    expect(args[:body][:filtered][:filter][:bool][:must].first[:range]['@timestamp'][:to]).to   eq time_range.last
   end
 
 end

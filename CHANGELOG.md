@@ -1,3 +1,10 @@
+### 0.1.0 / 2014-10-13
+
+Enhancements
+
+* Refactor to iterate over hour periods instead of full indices. This improves the performance a lot.
+* Increase timeout to prevent Faraday::TimeoutError exceptions.
+
 ### 0.0.9 / 2014-09-22
 
 Enhancements
