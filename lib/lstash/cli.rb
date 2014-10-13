@@ -9,6 +9,8 @@ require 'lstash/client'
 
 module Lstash
 
+  TRANSPORT_REQUEST_TIMEOUT = 60.freeze # 1 minute request timeout
+
   class CLI < Thor
 
     class_option :from,   :banner => 'start of time range', :aliases => '-f', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
@@ -45,7 +47,7 @@ module Lstash
     desc "count QUERY", "count number of log messages matching the QUERY"
     def count(query_string)
       run_command(query_string) do |es_client, query|
-        count  = Lstash::Client.new(es_client, options).count(query)
+        count = Lstash::Client.new(es_client, options).count(query)
         puts count
       end
     end
@@ -55,14 +57,15 @@ module Lstash
     def run_command(query_string)
       es_client = ::Elasticsearch::Client.new(
         url: options[:es_url] || ENV['ES_URL'] || 'localhost',
-        log: !!ENV['DEBUG']
+        log: !!ENV['DEBUG'],
+        transport_options: { request: { timeout: TRANSPORT_REQUEST_TIMEOUT } }
       )
       query  = Lstash::Query.new(query_string, options)
 
       yield es_client, query
 
     rescue Exception => e
-      raise Thor::Error.new(e.message)
+      options[:debug] ? raise(e) : raise(Thor::Error.new(e.message))
     end
 
     protected
