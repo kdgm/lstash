@@ -101,8 +101,8 @@ module Lstash
           must: [
             range: {
               '@timestamp' => {
-                from: to_msec(time_range.from),
-                to:   to_msec(time_range.to)
+                gte: to_msec(from),
+                lt:  to_msec(to)
               }
             },
             # fquery: {
