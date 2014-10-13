@@ -13,7 +13,7 @@ module Lstash
 
     class ConnectionError < StandardError; end
 
-    PER_PAGE = 5000 # best time, lowest resource usage
+    PER_PAGE = 5000.freeze # best time, lowest resource usage
 
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
