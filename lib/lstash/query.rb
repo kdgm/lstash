@@ -11,9 +11,12 @@ module Lstash
 
     LOGSTASH_PREFIX = 'logstash-'.freeze
     WILDCARD_QUERY  = '*'.freeze
+    HOUR_IN_SECONDS = 3600.freeze
 
-    def initialize(query = nil, arguments = {})
-      @query = query
+    attr_accessor :from, :to
+
+    def initialize(query_string = nil, arguments = {})
+      @query_string = query_string
 
       @anchor = time_parse(arguments[:anchor], 'today')
       @from   = time_parse(arguments[:from],   'today')
@@ -22,38 +25,51 @@ module Lstash
       @to = Time.now if @to > Time.now # prevent accessing non-existing times / indices
     end
 
-    def time_range
-      OpenStruct.new(from: @from, to: @to)
+    def index_name(date)
+      "#{LOGSTASH_PREFIX}#{date.strftime('%Y.%m.%d')}"
     end
 
-    def date_range
-      (@from.utc.to_date .. @to.utc.to_date)
-    end
-
-    def indices
-      date_range.map { |d| "#{LOGSTASH_PREFIX}#{d.strftime('%Y.%m.%d')}" }
-    end
-
-    def body
+    def search(from, size)
       {
-        sort: sort_order,
-
+        sort:   sort_order,
         fields: %w(message),
+        query:  filter,
+        from:   from,
+        size:   size
+      }
+    end
 
-        # return in order of ascending timestamp
-        query: {
-          filtered: {
-            query:  es_query,
-            filter: es_filter
-          }
+    def filter
+      {
+        filtered: {
+          query:  es_query,
+          filter: es_filter
         }
       }
     end
 
+    def each_hour(&block)
+      # iterate over the whole range in blocks of one hour
+      time_iterate(@from.utc, @to.utc - 1, HOUR_IN_SECONDS) do |hour|
+        yield index_name(hour.to_date),
+              Query.new(@query_string,
+                        anchor: @anchor,
+                        from:   hour,
+                        to:     hour + HOUR_IN_SECONDS)
+      end
+    end
+
     private
 
-    def time_parse(time_string, default)
-      time_string = time_string.strip rescue nil
+    def time_iterate(start_time, end_time, step, &block)
+      begin
+        yield(start_time)
+      end while (start_time += step) < end_time
+    end
+
+    def time_parse(time_or_string, default)
+      return time_or_string if time_or_string.is_a? Time
+      time_string = time_or_string.strip rescue nil
       time_string ||= default
       case time_string
       when 'firstday'
@@ -71,13 +87,14 @@ module Lstash
       raise FormatError, "Invalid time format: #{time_string}"
     end
 
-    def query
-      q = @query.dup.strip rescue ''
+    def query_string
+      q = @query_string.dup.strip rescue ''
       q = WILDCARD_QUERY if q.empty?
       q
     end
 
     def sort_order
+      # return results in order of ascending timestamp
       [ { '@timestamp' => { order: 'asc' } } ]
     end
 
@@ -87,7 +104,7 @@ module Lstash
           should: [
             {
               query_string: {
-                query: query
+                query: query_string
               }
             }
           ]
@@ -108,7 +125,7 @@ module Lstash
             # fquery: {
             #   query: {
             #     query_string: {
-            #       query: query
+            #       query: query_string
             #     }
             #   }
             # }
@@ -117,7 +134,7 @@ module Lstash
           #   fquery: {
           #     query: {
           #       query_string: {
-          #         query: query
+          #         query: query_string
           #       }
           #     }
           #   }
@@ -126,7 +143,7 @@ module Lstash
           #   fquery: {
           #     query: {
           #       query_string: {
-          #         query: query
+          #         query: query_string
           #       }
           #     }
           #   }

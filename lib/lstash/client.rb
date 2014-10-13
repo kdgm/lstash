@@ -23,24 +23,29 @@ module Lstash
     end
 
     def count(query)
-      @logger.debug "time range: [%s..%s]" % [query.time_range.from, query.time_range.to]
+      @logger.debug "count from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.indices.each do |index|
-        count += count_messages(index, query)
+      query.each_hour do |index, hour_query|
+        count += count_messages(index, hour_query)
       end
-
+      @logger.debug "total count=#{count}"
       count
     end
 
     def grep(query)
-      @logger.debug "time range: [%s..%s]" % [query.time_range.from, query.time_range.to]
+      @logger.debug "grep from=#{query.from} to=#{query.to}"
 
-      query.indices.each do |index|
-        grep_messages(index, query) do |message|
+      count = 0
+      query.each_hour do |index, hour_query|
+        grep_messages(index, hour_query) do |message|
+          count += 1
           yield message if block_given?
         end
       end
+
+      @logger.debug "total count=#{count}"
+      count
     end
 
     private
@@ -48,9 +53,9 @@ module Lstash
     def count_messages(index, query)
       result = Hashie::Mash.new @es_client.send(:count,
         index: index,
-        body:  query.body[:query]
+        body:  query.filter
       )
-      @logger.debug "count #{index}: #{result['count']} "
+      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result['count']}"
       result['count']
     end
 
@@ -61,9 +66,9 @@ module Lstash
       method = :search
       while (messages.nil? || messages.count > 0) do
         result = Hashie::Mash.new @es_client.send(method, {
-          index: index,
-          scroll: '10m',
-          body: query.body.merge(from: offset, size: PER_PAGE),
+          index:  index,
+          scroll: '1m',
+          body:   query.search(offset, PER_PAGE),
         }.merge(scroll_params))
 
         messages = result.hits.hits
@@ -78,14 +83,14 @@ module Lstash
 
         method = :scroll
       end
-      @logger.debug "grep #{index}: #{offset}"
+      @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to} count=#{offset}"
       Hashie::Mash.new @es_client.clear_scroll(scroll_params)
     end
 
     def debug_logger
       logger = Logger.new(STDERR)
       logger.formatter = proc do |severity, datetime, progname, msg|
-        "#{msg}\n"
+        "#{datetime} #{msg}\n"
       end
       logger
     end
