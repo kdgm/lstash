@@ -47,7 +47,7 @@ module Lstash
     desc "count QUERY", "count number of log messages matching the QUERY"
     def count(query_string)
       run_command(query_string) do |es_client, query|
-        count  = Lstash::Client.new(es_client, options).count(query)
+        count = Lstash::Client.new(es_client, options).count(query)
         puts count
       end
     end
