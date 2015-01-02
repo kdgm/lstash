@@ -9,7 +9,7 @@ require 'lstash/client'
 
 module Lstash
 
-  TRANSPORT_REQUEST_TIMEOUT = 60.freeze # 1 minute request timeout
+  TRANSPORT_REQUEST_TIMEOUT = 120.freeze # 2 minute request timeout
 
   class CLI < Thor
 
