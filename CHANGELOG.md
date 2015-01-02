@@ -1,3 +1,9 @@
+### 0.1.2 / 2015-01-02
+
+Enhancements
+
+* Double Elasticsearch::Client request timeout to 120 seconds to prevent Timeout::Error (Faraday::TimeoutError).
+
 ### 0.1.1 / 2014-10-13
 
 Enhancements
