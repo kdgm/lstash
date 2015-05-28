@@ -23,9 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-its"
-  spec.add_development_dependency "rspec-autotest"
-  spec.add_development_dependency "autotest-standalone"
-  spec.add_development_dependency "autotest-fsevent"
   spec.add_development_dependency "timecop"
 
   spec.add_dependency "typhoeus"
