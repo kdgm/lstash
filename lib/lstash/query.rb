@@ -11,7 +11,6 @@ module Lstash
 
     LOGSTASH_PREFIX = 'logstash-'.freeze
     WILDCARD_QUERY  = '*'.freeze
-    HOUR_IN_SECONDS = 3600.freeze
 
     attr_accessor :from, :to
 
@@ -48,14 +47,14 @@ module Lstash
       }
     end
 
-    def each_hour(&block)
-      # iterate over the whole range in blocks of one hour
-      time_iterate(@from.utc, @to.utc - 1, HOUR_IN_SECONDS) do |hour|
-        yield index_name(hour.to_date),
+    def each_period(step, &block)
+      # iterate over the whole range in blocks of the specified period
+      time_iterate(@from.utc, @to.utc - 1, step) do |start_at|
+        yield index_name(start_at.to_date),
               Query.new(@query_string,
                         anchor: @anchor,
-                        from:   hour,
-                        to:     hour + HOUR_IN_SECONDS)
+                        from:   start_at,
+                        to:     start_at + step)
       end
     end
 
