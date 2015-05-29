@@ -50,7 +50,7 @@ describe Lstash::Client do
 
         allow(es_client).to receive(:clear_scroll)
 
-        expect(subject.grep(query)).to eq 28
+        expect(subject.grep(query, 3600)).to eq 28
       end
     end
 
