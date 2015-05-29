@@ -1,3 +1,15 @@
+### 0.1.4 / 2015-05-29
+
+Enhancements
+
+* Change default time steps from 1 hour to 120 seconds to aid in grepping from datasets with many events per minute.
+
+### 0.1.3 / 2015-05-28
+
+Enhancements
+
+* Remove troublesome development dependencies (autotest).
+
 ### 0.1.2 / 2015-01-02
 
 Enhancements
