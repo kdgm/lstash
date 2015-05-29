@@ -14,6 +14,8 @@ module Lstash
     class ConnectionError < StandardError; end
 
     PER_PAGE = 5000.freeze # best time, lowest resource usage
+    DEFAULT_COUNT_STEP = 3600.freeze # 1 hour
+    DEFAULT_GREP_STEP  = 120.freeze  # 2 minutes
 
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
@@ -22,22 +24,22 @@ module Lstash
       @logger    = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
     end
 
-    def count(query)
+    def count(query, step = DEFAULT_COUNT_STEP)
       @logger.debug "count from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_hour do |index, hour_query|
+      query.each_period(step) do |index, hour_query|
         count += count_messages(index, hour_query)
       end
       @logger.debug "total count=#{count}"
       count
     end
 
-    def grep(query)
+    def grep(query, step = DEFAULT_GREP_STEP)
       @logger.debug "grep from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_hour do |index, hour_query|
+      query.each_period(step) do |index, hour_query|
         grep_messages(index, hour_query) do |message|
           count += 1
           yield message if block_given?
@@ -67,7 +69,7 @@ module Lstash
       while (messages.nil? || messages.count > 0) do
         result = Hashie::Mash.new @es_client.send(method, {
           index:  index,
-          scroll: '1m',
+          scroll: '5m',
           body:   query.search(offset, PER_PAGE),
         }.merge(scroll_params))
 

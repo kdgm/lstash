@@ -91,12 +91,12 @@ describe Lstash::Query do
         its('to')   { should eq Time.parse('2014-08-03 15:54:33.000000000 +0200') }
       end
 
-      context "each_hour" do
+      context "each_period" do
         let(:options) { { from: 'firstday', anchor: 'yesterday', to: 'today' } }
         it "should iterate over range by hour" do
           indices = []
           queries = []
-          subject.each_hour do |index, query|
+          subject.each_period(3600) do |index, query|
             indices << index
             queries << query
           end
