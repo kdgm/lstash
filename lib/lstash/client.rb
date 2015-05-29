@@ -67,7 +67,7 @@ module Lstash
       while (messages.nil? || messages.count > 0) do
         result = Hashie::Mash.new @es_client.send(method, {
           index:  index,
-          scroll: '1m',
+          scroll: '5m',
           body:   query.search(offset, PER_PAGE),
         }.merge(scroll_params))
 
