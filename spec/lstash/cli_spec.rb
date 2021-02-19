@@ -62,7 +62,7 @@ describe Lstash::CLI do
       it "should print error message" do
         output = capture_stderr { Lstash::CLI.start(args) }
 
-        expect(output).to eq "the scheme http does not accept registry part: '':9200 (or bad hostname?)\n"
+        expect(output).to include("Failed to open TCP connection to '':9200")
       end
     end
 
