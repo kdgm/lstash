@@ -1,3 +1,9 @@
+## Release 0.2.0
+Merge branch 'feature/fix/hashie-warnings' into develop
+- [fix] pin faraday to a compatible version
+- [enh] upgrade to ruby 2.4(.6)
+- [fix] suppress Hashie warnings; it would generate a warning for each log line (on stdout) leading to very large output
+
 ### 0.1.4 / 2015-05-29
 
 Enhancements
