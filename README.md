@@ -24,7 +24,7 @@ Or install it yourself as:
 	  lstash count QUERY
 
 	Description:
-	  Count log messages matching the QUERY from Logstash and output this count to stdout. QUERY can use Apache Lucene query 
+	  Count log messages matching the QUERY from Logstash and output this count to stdout. QUERY can use Apache Lucene query
 	  parser syntax.
 
 	  Example to count the number of HAProxy log messages in yesterdays month.
@@ -82,38 +82,38 @@ Assuming today is Sep 1 2014. Count all haproxy log messages in the previous mon
 
 	lstash count program:haproxy --anchor yesterday --from firstday --to today -d
 	time range: [2014-08-01 00:00:00 +0200..2014-09-01 00:00:00 +0200]
-	logstash-2014.07.31: 1 
-	logstash-2014.08.01: 13 
-	logstash-2014.08.02: 14 
-	logstash-2014.08.03: 1654 
-	logstash-2014.08.04: 6 
-	logstash-2014.08.05: 20 
-	logstash-2014.08.06: 219 
-	logstash-2014.08.07: 32 
-	logstash-2014.08.08: 14 
-	logstash-2014.08.09: 28 
-	logstash-2014.08.10: 799 
-	logstash-2014.08.11: 18 
-	logstash-2014.08.12: 8 
-	logstash-2014.08.13: 23 
-	logstash-2014.08.14: 25 
-	logstash-2014.08.15: 69 
-	logstash-2014.08.16: 19 
-	logstash-2014.08.17: 1160 
-	logstash-2014.08.18: 284 
-	logstash-2014.08.19: 61 
-	logstash-2014.08.20: 26 
-	logstash-2014.08.21: 16 
-	logstash-2014.08.22: 145 
-	logstash-2014.08.23: 72 
-	logstash-2014.08.24: 792 
-	logstash-2014.08.25: 31 
-	logstash-2014.08.26: 33 
-	logstash-2014.08.27: 51 
-	logstash-2014.08.28: 8 
-	logstash-2014.08.29: 23 
-	logstash-2014.08.30: 25 
-	logstash-2014.08.31: 69 
+	logstash-2014.07.31: 1
+	logstash-2014.08.01: 13
+	logstash-2014.08.02: 14
+	logstash-2014.08.03: 1654
+	logstash-2014.08.04: 6
+	logstash-2014.08.05: 20
+	logstash-2014.08.06: 219
+	logstash-2014.08.07: 32
+	logstash-2014.08.08: 14
+	logstash-2014.08.09: 28
+	logstash-2014.08.10: 799
+	logstash-2014.08.11: 18
+	logstash-2014.08.12: 8
+	logstash-2014.08.13: 23
+	logstash-2014.08.14: 25
+	logstash-2014.08.15: 69
+	logstash-2014.08.16: 19
+	logstash-2014.08.17: 1160
+	logstash-2014.08.18: 284
+	logstash-2014.08.19: 61
+	logstash-2014.08.20: 26
+	logstash-2014.08.21: 16
+	logstash-2014.08.22: 145
+	logstash-2014.08.23: 72
+	logstash-2014.08.24: 792
+	logstash-2014.08.25: 31
+	logstash-2014.08.26: 33
+	logstash-2014.08.27: 51
+	logstash-2014.08.28: 8
+	logstash-2014.08.29: 23
+	logstash-2014.08.30: 25
+	logstash-2014.08.31: 69
 	5633
 
 ## Using lstash as a gem in your project
@@ -144,6 +144,28 @@ Usage:
 	client.grep(query) do |message|
 	  puts message
 	end
+
+## Publishing the gem to RubyGems.org
+
+1. Build the gem
+
+```
+$ gem build lstash.gem
+  Successfully built RubyGem
+  Name: lstash
+  Version: 0.2.0
+  File: lstash-0.2.0.gem
+```
+
+2. Pushing your gem to RubyGems.org
+
+```
+gem push lstash-0.2.0.gem
+  Pushing gem to RubyGems.org...
+  Successfully registered gem: lstash (0.2.0)
+```
+
+See [RubyGems.org documention](https://guides.rubygems.org/) for more info.
 
 ## Contributing
 
