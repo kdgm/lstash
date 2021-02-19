@@ -25,8 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-its"
   spec.add_development_dependency "timecop"
 
-  spec.add_dependency "typhoeus"
+  spec.add_dependency "typhoeus", "~> 1.4.0"
   spec.add_dependency "elasticsearch", "~> 0.4"
-  spec.add_dependency "hashie"
-  spec.add_dependency "thor"
+  spec.add_dependency "hashie", "~> 4.1.0"
+  spec.add_dependency "thor", "~> 0.20.3"
 end
