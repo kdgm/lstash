@@ -1,0 +1,27 @@
+x-base: &base
+  # NOTE: We deliberately do not set the image name to prevent
+  # collissions between images built in different git work trees (directories)
+  # image: LEFT UNSET DELIBERATELY
+  build:
+    context: .devcontainer
+  tmpfs:
+    - /tmp
+  volumes:
+    - .:/gem:cached
+    - bundle:/usr/local/bundle
+    - history:/usr/local/hist
+  stdin_open: true
+  tty: true
+  environment:
+    HISTFILE: /usr/local/hist/.bash_history
+    IRB_HISTFILE: /usr/local/hist/.irb_history
+    EDITOR: ${EDITOR:-vi}
+
+services:
+  runner:
+    <<: *base
+    command: /bin/bash
+
+volumes:
+  bundle:
+  history:
