@@ -1,0 +1,48 @@
+# Required minimum dip version
+version: '6.1'
+
+compose:
+  files:
+    - docker-compose.yml
+    - docker-compose.override.yml # platform specific overrides
+
+  # Specify project name explicitly to avoid name collisions:
+  # docker-compose uses the compose file's folder name as the project name by default,
+  # which could be the same for different projects (e.g., if you store docker-compose.yml
+  # in the .devcontainer/ folder)
+
+  # NOTE: We deliberately do not set project_name  to prevent collissions
+  # between git work trees.
+  # Let the name be determined automatically from the base directory name.
+  # project_name: UNSET DELIBERATELY
+
+interaction:
+  sh:
+    description: Start a Bash shell in the container
+    service: runner
+    command: /bin/bash
+
+  bundle:
+    description: Run bundler commands
+    service: runner
+    command: bundle
+
+  rake:
+    description: Run rake commands
+    service: runner
+    command: bundle exec rake
+
+  rspec:
+    description: Run specs
+    service: runner
+    command: bundle exec rspec
+
+provision:
+  # Remove old containers and volumes.
+  - dip compose down --volumes --remove-orphans
+
+  # Build the development container (based on .devcontainer/Dockerfile)
+  - dip compose build
+
+  # Install gem dependencies
+  - dip bundle install
