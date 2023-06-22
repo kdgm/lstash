@@ -80,8 +80,9 @@ describe Lstash::CLI do
         es_client = double("es_client")
 
         allow(Elasticsearch::Client).to receive(:new) { es_client }
+        allow_any_instance_of(Lstash::Client).to receive(:validate_shards!).and_return(true)
 
-        expect(es_client).to receive(:count).exactly(31 * 24).times.and_return(count: 100)
+        expect(es_client).to receive(:count).exactly(31 * 24).times.and_return("count" => 100)
 
         output = capture_stdout { Lstash::CLI.start(args) }
         expect(output).to match("#{31 * 24 * 100}")
@@ -95,8 +96,9 @@ describe Lstash::CLI do
         es_client = double("es_client")
 
         allow(Elasticsearch::Client).to receive(:new) { es_client }
+        allow_any_instance_of(Lstash::Client).to receive(:validate_shards!).and_return(true)
 
-        expect(es_client).to receive(:count).exactly(24).times.and_return(count: 100)
+        expect(es_client).to receive(:count).exactly(24).times.and_return("count" => 100)
 
         output = capture_stdout { Lstash::CLI.start(args) }
         expect(output).to match("#{24 * 100}")

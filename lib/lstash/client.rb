@@ -14,6 +14,8 @@ module Lstash
   class Client
     class ConnectionError < StandardError; end
 
+    class ShardMismatchError < StandardError; end
+
     PER_PAGE = 5000 # best time, lowest resource usage
     DEFAULT_COUNT_STEP = 3600 # 1 hour
     DEFAULT_GREP_STEP = 120  # 2 minutes
@@ -57,6 +59,7 @@ module Lstash
       result = Hashie::Mash.new @es_client.send(:count,
         index: index,
         body: {query: query.filter})
+      validate_shards!(result["_shards"])
       @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result["count"]}"
       result["count"]
     end
@@ -73,8 +76,9 @@ module Lstash
           body: query.search(offset, PER_PAGE)
         }.merge(scroll_params))
 
-        messages = result.hits.hits
+        validate_shards!(result["_shards"])
 
+        messages = result.hits.hits
         offset += messages.count
         scroll_params = {scroll_id: result._scroll_id}
 
@@ -95,6 +99,12 @@ module Lstash
         "#{datetime} #{msg}\n"
       end
       logger
+    end
+
+    def validate_shards!(shards)
+      if shards["total"] != shards["successful"]
+        raise ShardMismatchError, "Shard mismatch: total: #{shards["total"]}, successful: #{shards["successful"]}"
+      end
     end
   end
 end

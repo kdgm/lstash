@@ -4,6 +4,9 @@ require "lstash/client"
 describe Lstash::Client do
   let(:es_client) { double("es_client") }
   subject { Lstash::Client.new(es_client) }
+  before do
+    allow(subject).to receive(:validate_shards!).and_return(true)
+  end
 
   it "should initialize properly" do
     expect(subject).not_to be nil
@@ -53,8 +56,8 @@ describe Lstash::Client do
 
   def hits(messages)
     {
-      hits: {
-        hits: messages.map { |m| {_source: {message: m}} }
+      "hits" => {
+        "hits" => messages.map { |m| {"_source" => {"message" => m}} }
       }
     }
   end
