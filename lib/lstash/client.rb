@@ -56,7 +56,7 @@ module Lstash
     def count_messages(index, query)
       result = Hashie::Mash.new @es_client.send(:count,
         index: index,
-        body: query.filter)
+        body: {query: query.filter})
       @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result["count"]}"
       result["count"]
     end

@@ -30,7 +30,7 @@ module Lstash
     def search(from, size)
       {
         sort: sort_order,
-        fields: %w[message],
+        _source: %w[message],
         query: filter,
         from: from,
         size: size
@@ -39,8 +39,8 @@ module Lstash
 
     def filter
       {
-        filtered: {
-          query: es_query,
+        bool: {
+          must: es_query,
           filter: es_filter
         }
       }
@@ -105,55 +105,22 @@ module Lstash
     end
 
     def es_query
-      {
-        bool: {
-          should: [
-            {
-              query_string: {
-                query: query_string
-              }
-            }
-          ]
+      [
+        {
+          query_string: {
+            query: query_string
+          }
         }
-      }
+      ]
     end
 
     def es_filter
       {
-        bool: {
-          must: [
-            range: {
-              "@timestamp" => {
-                gte: to_msec(from),
-                lt: to_msec(to)
-              }
-            }
-            # fquery: {
-            #   query: {
-            #     query_string: {
-            #       query: query_string
-            #     }
-            #   }
-            # }
-          ]
-          # must_not: [
-          #   fquery: {
-          #     query: {
-          #       query_string: {
-          #         query: query_string
-          #       }
-          #     }
-          #   }
-          # ],
-          # should: [
-          #   fquery: {
-          #     query: {
-          #       query_string: {
-          #         query: query_string
-          #       }
-          #     }
-          #   }
-          # ]
+        range: {
+          "@timestamp" => {
+            gte: to_msec(from),
+            lt: to_msec(to)
+          }
         }
       }
     end

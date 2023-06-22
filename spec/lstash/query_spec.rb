@@ -162,11 +162,19 @@ describe Lstash::Query do
       it "should produce the correct elasticsearch search request attributes" do
         expect(subject.search(0, 10)).to eq({
           sort: [{"@timestamp" => {order: "asc"}}],
-          fields: %w[message],
-          query: {filtered: {
-            query: {bool: {should: [{query_string: {query: "*"}}]}},
-            filter: {bool: {must: [{range: {"@timestamp" => {gte: 1407016800000, lt: 1407074073000}}}]}}
-          }},
+          _source: %w[message],
+          query: {
+            bool: {
+              must: [
+                {
+                  query_string: {query: "*"}
+                }
+              ],
+              filter: {
+                range: {"@timestamp" => {gte: 1407016800000, lt: 1407074073000}}
+              }
+            }
+          },
           from: 0,
           size: 10
         })
