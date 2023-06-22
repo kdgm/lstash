@@ -48,7 +48,7 @@ describe Lstash::Client do
         allow(es_client).to receive(:scroll).and_return(hits([]))
 
         expect(es_client).to receive(:clear_scroll).exactly(7).times
-        expect(subject.grep(query, 3600)).to eq 28
+        expect(subject.grep(query)).to eq 28
       end
     end
   end
