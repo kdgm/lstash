@@ -70,7 +70,7 @@ module Lstash
     def count_messages(index, query)
       result = @es_client.count(index: index, body: {query: query.filter})
       validate_shards!(result["_shards"])
-      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result["count"]}"
+      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to.utc} count=#{result["count"]}"
       result["count"]
     end
 
