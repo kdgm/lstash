@@ -130,20 +130,20 @@ Usage:
 
     bundle console
 
-# connect to elasticsearch and create the Lstash client
+Connect to elasticsearch and create the Lstash client
 
     elasticsearch = Elasticsearch::Client.new(url: ENV['ES_URL'])
     client = Lstash::Client.new(elasticsearch, debug: true)
 
-# create the query
+Create the query
 
     query = Lstash::Query.new('program:haproxy', from: 'today', to: 'now')
 
-# count
+Count example
 
     client.count(query)
 
-# grep
+Grep example
 
     client.grep(query) do |message|
       puts message
