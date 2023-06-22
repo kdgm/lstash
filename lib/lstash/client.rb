@@ -17,7 +17,7 @@ module Lstash
 
     PER_PAGE = 5000 # best time, lowest resource usage
     DEFAULT_COUNT_STEP = 3600 # 1 hour
-    DEFAULT_GREP_STEP = 120  # 2 minutes
+    DEFAULT_GREP_STEP = 3600 # 1 hour # 120  # 2 minutes
 
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
