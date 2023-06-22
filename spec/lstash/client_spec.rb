@@ -35,7 +35,7 @@ describe Lstash::Client do
       it "should return the messages matching the query" do
         query = Lstash::Query.new("*", from: Time.parse("2014-10-10 00:00"), to: Time.parse("2014-10-10 07:00"))
 
-        expect(es_client).to receive(:search).and_return(
+        allow(es_client).to receive(:search).and_return(
           hits(%w[1]),
           hits(%w[2 2]),
           hits(%w[3 3 3]),
