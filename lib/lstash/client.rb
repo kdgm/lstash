@@ -24,14 +24,20 @@ module Lstash
 
       @es_client = es_client
       @logger = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
+      @fast = options[:fast]
     end
 
     def count(query)
       @logger.debug "count from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_period(COUNT_STEP) do |index, hour_query|
-        count += count_messages(index, hour_query)
+      if @fast
+        count = count_messages(query.all_indices, query)
+      else
+        count = 0
+        query.each_period(COUNT_STEP) do |index, hour_query|
+          count += count_messages(index, hour_query)
+        end
       end
       @logger.debug "total count=#{count}"
       count
@@ -41,10 +47,17 @@ module Lstash
       @logger.debug "grep from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_period(GREP_STEP) do |index, hour_query|
-        grep_messages(index, hour_query) do |message|
+      if @fast
+        grep_messages(query.all_indices, query) do |message|
           count += 1
           yield message if block_given?
+        end
+      else
+        query.each_period(GREP_STEP) do |index, hour_query|
+          grep_messages(index, hour_query) do |message|
+            count += 1
+            yield message if block_given?
+          end
         end
       end
 

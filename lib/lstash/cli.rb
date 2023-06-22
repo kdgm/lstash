@@ -16,6 +16,7 @@ module Lstash
     class_option :anchor, banner: "anchor date/time", aliases: "-a", desc: "used as reference date for firstday"
     class_option :es_url, banner: "Elasticsearch endpoint for Logstash", aliases: "-e", desc: "or ES_URL environment variable"
     class_option :debug, banner: "debug log to stderr", aliases: "-d", type: :boolean
+    class_option :fast, desc: "user wildcard to query all logstash-* indices", type: :boolean, default: false
 
     long_desc <<-LONGDESC
       Grep log messages matching the QUERY from Logstash in ascending timestamp order

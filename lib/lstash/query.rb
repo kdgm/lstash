@@ -27,6 +27,10 @@ module Lstash
       "#{LOGSTASH_PREFIX}#{date.strftime("%Y.%m.%d")}"
     end
 
+    def all_indices
+      "logstash-*"
+    end
+
     def search(from, size)
       {
         sort: sort_order,
