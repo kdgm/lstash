@@ -1,6 +1,5 @@
 require "logger"
 require "date"
-require "hashie"
 
 class NullLogger < Logger
   def initialize(*args)
@@ -56,9 +55,7 @@ module Lstash
     private
 
     def count_messages(index, query)
-      result = Hashie::Mash.new @es_client.send(:count,
-        index: index,
-        body: {query: query.filter})
+      result = @es_client.count(index: index, body: {query: query.filter})
       validate_shards!(result["_shards"])
       @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result["count"]}"
       result["count"]
@@ -70,7 +67,7 @@ module Lstash
       offset = 0
       method = :search
       while messages.nil? || messages.count > 0
-        result = Hashie::Mash.new @es_client.send(method, {
+        result = @es_client.send(method, {
           index: index,
           scroll: "5m",
           body: query.search(offset, PER_PAGE)
@@ -78,19 +75,19 @@ module Lstash
 
         validate_shards!(result["_shards"])
 
-        messages = result.hits.hits
+        messages = result["hits"]["hits"]
         offset += messages.count
-        scroll_params = {scroll_id: result._scroll_id}
+        scroll_params = {scroll_id: result["_scroll_id"]}
 
         messages.each do |h|
-          next if h.fields.nil?
-          yield h.fields.message if block_given?
+          next if h["_source"].nil?
+          yield h["_source"]["message"] if block_given?
         end
 
         method = :scroll
       end
       @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to} count=#{offset}"
-      Hashie::Mash.new @es_client.clear_scroll(scroll_params)
+      @es_client.clear_scroll(scroll_params) unless scroll_params.empty?
     end
 
     def debug_logger

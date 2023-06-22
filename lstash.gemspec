@@ -25,7 +25,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "typhoeus", "~> 1.4.0"
   spec.add_dependency "elasticsearch", "~> 7"
-  spec.add_dependency "hashie", "~> 4.1.0"
   spec.add_dependency "thor", "~> 0.20.3"
   spec.add_dependency "faraday", "~> 0.17.4"
 end
