@@ -70,7 +70,7 @@ module Lstash
         result = @es_client.send(method, {
           index: index,
           scroll: "5m",
-          body: query.search(offset, PER_PAGE)
+          body: (method == :search) ? query.search(offset, PER_PAGE) : nil
         }.merge(scroll_params))
 
         validate_shards!(result["_shards"])
