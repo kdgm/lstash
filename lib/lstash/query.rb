@@ -1,47 +1,46 @@
-require 'time'
-require 'date'
-require 'ostruct'
+require "time"
+require "date"
+require "ostruct"
 
 module Lstash
-
   class Query
-
     class FormatError < StandardError; end
+
     class QueryMissing < StandardError; end
 
-    LOGSTASH_PREFIX = 'logstash-'.freeze
-    WILDCARD_QUERY  = '*'.freeze
+    LOGSTASH_PREFIX = "logstash-".freeze
+    WILDCARD_QUERY = "*".freeze
 
     attr_accessor :from, :to
 
     def initialize(query_string = nil, arguments = {})
       @query_string = query_string
 
-      @anchor = time_parse(arguments[:anchor], 'today')
-      @from   = time_parse(arguments[:from],   'today')
-      @to     = time_parse(arguments[:to],     'now')
+      @anchor = time_parse(arguments[:anchor], "today")
+      @from = time_parse(arguments[:from], "today")
+      @to = time_parse(arguments[:to], "now")
 
       @to = Time.now if @to > Time.now # prevent accessing non-existing times / indices
     end
 
     def index_name(date)
-      "#{LOGSTASH_PREFIX}#{date.strftime('%Y.%m.%d')}"
+      "#{LOGSTASH_PREFIX}#{date.strftime("%Y.%m.%d")}"
     end
 
     def search(from, size)
       {
-        sort:   sort_order,
-        fields: %w(message),
-        query:  filter,
-        from:   from,
-        size:   size
+        sort: sort_order,
+        fields: %w[message],
+        query: filter,
+        from: from,
+        size: size
       }
     end
 
     def filter
       {
         filtered: {
-          query:  es_query,
+          query: es_query,
           filter: es_filter
         }
       }
@@ -52,9 +51,9 @@ module Lstash
       time_iterate(@from.utc, @to.utc - 1, step) do |start_at|
         yield index_name(start_at.to_date),
               Query.new(@query_string,
-                        anchor: @anchor,
-                        from:   start_at,
-                        to:     start_at + step)
+                anchor: @anchor,
+                from: start_at,
+                to: start_at + step)
       end
     end
 
@@ -68,16 +67,20 @@ module Lstash
 
     def time_parse(time_or_string, default)
       return time_or_string if time_or_string.is_a? Time
-      time_string = time_or_string.strip rescue nil
+      time_string = begin
+        time_or_string.strip
+      rescue
+        nil
+      end
       time_string ||= default
       case time_string
-      when 'firstday'
+      when "firstday"
         midnight_at_beginning_of_month
-      when 'now'
+      when "now"
         Time.now
-      when 'today'
+      when "today"
         midnight_today
-      when 'yesterday'
+      when "yesterday"
         midnight_yesterday
       else
         Time.parse(time_string)
@@ -87,14 +90,18 @@ module Lstash
     end
 
     def query_string
-      q = @query_string.dup.strip rescue ''
+      q = begin
+        @query_string.dup.strip
+      rescue
+        ""
+      end
       q = WILDCARD_QUERY if q.empty?
       q
     end
 
     def sort_order
       # return results in order of ascending timestamp
-      [ { '@timestamp' => { order: 'asc' } } ]
+      [{"@timestamp" => {order: "asc"}}]
     end
 
     def es_query
@@ -116,11 +123,11 @@ module Lstash
         bool: {
           must: [
             range: {
-              '@timestamp' => {
+              "@timestamp" => {
                 gte: to_msec(from),
-                lt:  to_msec(to)
+                lt: to_msec(to)
               }
-            },
+            }
             # fquery: {
             #   query: {
             #     query_string: {
@@ -128,7 +135,7 @@ module Lstash
             #     }
             #   }
             # }
-          ],
+          ]
           # must_not: [
           #   fquery: {
           #     query: {
@@ -161,7 +168,7 @@ module Lstash
     end
 
     def midnight_yesterday
-      (Date.today-1).to_time
+      (Date.today - 1).to_time
     end
 
     def anchor_time
@@ -171,7 +178,5 @@ module Lstash
     def to_msec(time)
       time.to_i * 1000
     end
-
   end
-
 end
