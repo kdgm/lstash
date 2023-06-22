@@ -23,6 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-its", "~> 1.0.1"
   spec.add_development_dependency "timecop", "~> 0.7.1"
 
-  spec.add_dependency "elasticsearch", "~> 7"
+  spec.add_dependency "elasticsearch", "~> 7.17.7"
   spec.add_dependency "thor", "~> 0.20.3"
 end
