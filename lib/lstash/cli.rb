@@ -1,23 +1,21 @@
 # external dependencies
-require 'thor'
-require 'uri'
-require 'elasticsearch'
+require "thor"
+require "uri"
+require "elasticsearch"
 
 # local files we need
-require 'lstash/query'
-require 'lstash/client'
+require "lstash/query"
+require "lstash/client"
 
 module Lstash
-
-  TRANSPORT_REQUEST_TIMEOUT = 120.freeze # 2 minute request timeout
+  TRANSPORT_REQUEST_TIMEOUT = 120 # 2 minute request timeout
 
   class CLI < Thor
-
-    class_option :from,   :banner => 'start of time range', :aliases => '-f', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
-    class_option :to,     :banner => 'end of time range',   :aliases => '-t', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
-    class_option :anchor, :banner => 'anchor date/time',    :aliases => '-a', :desc => "used as reference date for firstday"
-    class_option :es_url, :banner => 'Elasticsearch endpoint for Logstash', :aliases => '-e', :desc => "or ES_URL environment variable"
-    class_option :debug,  :banner => 'debug log to stderr', :aliases => '-d', :type => :boolean
+    class_option :from, banner: "start of time range", aliases: "-f", desc: "date/time, 'now', 'today', 'yesterday', or 'firstday'"
+    class_option :to, banner: "end of time range", aliases: "-t", desc: "date/time, 'now', 'today', 'yesterday', or 'firstday'"
+    class_option :anchor, banner: "anchor date/time", aliases: "-a", desc: "used as reference date for firstday"
+    class_option :es_url, banner: "Elasticsearch endpoint for Logstash", aliases: "-e", desc: "or ES_URL environment variable"
+    class_option :debug, banner: "debug log to stderr", aliases: "-d", type: :boolean
 
     long_desc <<-LONGDESC
       Grep log messages matching the QUERY from Logstash in ascending timestamp order
@@ -56,25 +54,24 @@ module Lstash
 
     def run_command(query_string)
       es_client = ::Elasticsearch::Client.new(
-        url: options[:es_url] || ENV['ES_URL'] || 'localhost',
-        log: !!ENV['DEBUG'],
-        transport_options: { request: { timeout: TRANSPORT_REQUEST_TIMEOUT } }
+        url: options[:es_url] || ENV["ES_URL"] || "localhost",
+        log: !!ENV["DEBUG"],
+        transport_options: {request: {timeout: TRANSPORT_REQUEST_TIMEOUT}}
       )
-      query  = Lstash::Query.new(query_string, options)
+      query = Lstash::Query.new(query_string, options)
 
       yield es_client, query
-
-    rescue Exception => e
+    rescue => e
       options[:debug] ? raise(e) : raise(Thor::Error.new(e.message))
     end
 
-    protected
-
     # Make sure we exit on failure with an error code
-    def self.exit_on_failure?
-      true
+    class << self
+      protected
+
+      def exit_on_failure?
+        true
+      end
     end
-
   end
-
 end

@@ -1,27 +1,28 @@
-require 'logger'
-require 'date'
-require 'hashie'
+require "logger"
+require "date"
+require "hashie"
 
 class NullLogger < Logger
-  def initialize(*args); end
-  def add(*args, &block); end
+  def initialize(*args)
+  end
+
+  def add(*args, &block)
+  end
 end
 
 module Lstash
-
   class Client
-
     class ConnectionError < StandardError; end
 
-    PER_PAGE = 5000.freeze # best time, lowest resource usage
-    DEFAULT_COUNT_STEP = 3600.freeze # 1 hour
-    DEFAULT_GREP_STEP  = 120.freeze  # 2 minutes
+    PER_PAGE = 5000 # best time, lowest resource usage
+    DEFAULT_COUNT_STEP = 3600 # 1 hour
+    DEFAULT_GREP_STEP = 120  # 2 minutes
 
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
 
       @es_client = es_client
-      @logger    = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
+      @logger = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
     end
 
     def count(query, step = DEFAULT_COUNT_STEP)
@@ -55,10 +56,9 @@ module Lstash
     def count_messages(index, query)
       result = Hashie::Mash.new @es_client.send(:count,
         index: index,
-        body:  query.filter
-      )
-      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result['count']}"
-      result['count']
+        body: query.filter)
+      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result["count"]}"
+      result["count"]
     end
 
     def grep_messages(index, query)
@@ -66,11 +66,11 @@ module Lstash
       scroll_params = {}
       offset = 0
       method = :search
-      while (messages.nil? || messages.count > 0) do
+      while messages.nil? || messages.count > 0
         result = Hashie::Mash.new @es_client.send(method, {
-          index:  index,
-          scroll: '5m',
-          body:   query.search(offset, PER_PAGE),
+          index: index,
+          scroll: "5m",
+          body: query.search(offset, PER_PAGE)
         }.merge(scroll_params))
 
         messages = result.hits.hits
@@ -90,13 +90,11 @@ module Lstash
     end
 
     def debug_logger
-      logger = Logger.new(STDERR)
+      logger = Logger.new($stderr)
       logger.formatter = proc do |severity, datetime, progname, msg|
         "#{datetime} #{msg}\n"
       end
       logger
     end
-
   end
-
 end

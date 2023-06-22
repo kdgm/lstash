@@ -1,32 +1,32 @@
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'lstash'
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+require "lstash"
 
-require 'rspec/its'
+require "rspec/its"
 
-require 'timecop'
+require "timecop"
 
-ENV['ES_URL'] = nil
-ENV['TZ'] = 'Europe/Amsterdam' # Test in a specific timezone.
+ENV["ES_URL"] = nil
+ENV["TZ"] = "Europe/Amsterdam" # Test in a specific timezone.
 
 RSpec.configure do |config|
-  config.order = 'random'
+  config.order = "random"
 end
 
-require 'stringio'
+require "stringio"
 
-def capture_stdout(&blk)
+def capture_stdout
   old = $stdout
   $stdout = fake = StringIO.new
-  blk.call
+  yield
   fake.string
 ensure
   $stdout = old
 end
 
-def capture_stderr(&blk)
+def capture_stderr
   old = $stderr
   $stderr = fake = StringIO.new
-  blk.call
+  yield
   fake.string
 ensure
   $stderr = old

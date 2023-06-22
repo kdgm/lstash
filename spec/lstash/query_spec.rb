@@ -1,98 +1,96 @@
-require 'spec_helper'
-require 'lstash/query'
+require "spec_helper"
+require "lstash/query"
 
 describe Lstash::Query do
-
   context "running on 2014-08-03" do
-    let(:time)  { '2014-08-03 15:54:33' }
+    let(:time) { "2014-08-03 15:54:33" }
     let(:query_string) { nil }
     let(:options) { {} }
 
     subject { Lstash::Query.new(query_string, options) }
 
     before { Timecop.freeze(Time.parse(time)) }
-    after  { Timecop.return }
+    after { Timecop.return }
 
     it { should_not be nil }
     # it "should initialize properly" do
     #   expect(subject).not_to be nil
     # end
 
-    its('from') { should eq Time.parse('2014-08-03 00:00:00.000000000 +0200') }
-    its('to')   { should eq Time.parse('2014-08-03 15:54:33.000000000 +0200') }
+    its("from") { should eq Time.parse("2014-08-03 00:00:00.000000000 +0200") }
+    its("to") { should eq Time.parse("2014-08-03 15:54:33.000000000 +0200") }
 
     # its(:date_range) { should eq (Date.parse('2014-08-02')..Date.parse('2014-08-03')) }
 
     # its(:indices) { should eq [ "logstash-2014.08.02", "logstash-2014.08.03" ] }
 
     context "with specific query" do
-      let(:query_string) { 'program:haproxy' }
+      let(:query_string) { "program:haproxy" }
       its(:query_string) { should eq query_string }
     end
 
     context "without query" do
       let(:query_string) { nil }
-      its(:query_string) { should eql '*' }
+      its(:query_string) { should eql "*" }
     end
 
     context "from 'yesterday'" do
-      let(:options) { { from: 'yesterday' }}
-      its('from') { should eq Time.parse('2014-08-02 00:00:00.000000000 +0200') }
+      let(:options) { {from: "yesterday"} }
+      its("from") { should eq Time.parse("2014-08-02 00:00:00.000000000 +0200") }
     end
 
     context "from 'today'" do
-      let(:options) { { from: 'today' }}
-      its('from') { should eq Time.parse('2014-08-03 00:00:00.000000000 +0200') }
+      let(:options) { {from: "today"} }
+      its("from") { should eq Time.parse("2014-08-03 00:00:00.000000000 +0200") }
     end
 
     context "from 'now'" do
-      let(:options) { { from: 'now' }}
-      its('from') { should eq Time.parse('2014-08-03 15:54:33.000000000 +0200') }
+      let(:options) { {from: "now"} }
+      its("from") { should eq Time.parse("2014-08-03 15:54:33.000000000 +0200") }
     end
 
     context "to 'yesterday'" do
-      let(:options) { { to: 'yesterday' }}
-      its('to') { should eq Time.parse('2014-08-02 00:00:00.000000000 +0200') }
+      let(:options) { {to: "yesterday"} }
+      its("to") { should eq Time.parse("2014-08-02 00:00:00.000000000 +0200") }
     end
 
     context "to 'today'" do
-      let(:options) { { to: 'today' }}
-      its('to') { should eq Time.parse('2014-08-03 00:00:00.000000000 +0200') }
+      let(:options) { {to: "today"} }
+      its("to") { should eq Time.parse("2014-08-03 00:00:00.000000000 +0200") }
     end
 
     context "to 'now'" do
-      let(:options) { { to: 'now' }}
-      its('to') { should eq Time.parse('2014-08-03 15:54:33.000000000 +0200') }
+      let(:options) { {to: "now"} }
+      its("to") { should eq Time.parse("2014-08-03 15:54:33.000000000 +0200") }
     end
 
     context "from 'firstday'" do
-
-      let(:options) { { from: 'firstday' } }
-      its('from') { should eq Time.parse('2014-08-01 00:00:00.000000000 +0200') }
+      let(:options) { {from: "firstday"} }
+      its("from") { should eq Time.parse("2014-08-01 00:00:00.000000000 +0200") }
 
       context "anchor 'yesterday'" do
-        let(:anchor) { 'yesterday' }
-        its('from') { should eq Time.parse('2014-08-01 00:00:00.000000000 +0200') }
+        let(:anchor) { "yesterday" }
+        its("from") { should eq Time.parse("2014-08-01 00:00:00.000000000 +0200") }
       end
 
       context "anchor 'today'" do
-        let(:anchor) { 'today' }
-        its('from') { should eq Time.parse('2014-08-01 00:00:00.000000000 +0200') }
+        let(:anchor) { "today" }
+        its("from") { should eq Time.parse("2014-08-01 00:00:00.000000000 +0200") }
       end
 
       context "anchor '2014-07-17'" do
-        let(:options) { { from: 'firstday', anchor: '2014-07-17' } }
-        its('from') { should eq Time.parse('2014-07-01 00:00:00.000000000 +0200') }
+        let(:options) { {from: "firstday", anchor: "2014-07-17"} }
+        its("from") { should eq Time.parse("2014-07-01 00:00:00.000000000 +0200") }
       end
 
       context "date range" do
-        let(:options) { { from: 'firstday', anchor: 'yesterday' } }
-        its('from') { should eq Time.parse('2014-08-01 00:00:00.000000000 +0200') }
-        its('to')   { should eq Time.parse('2014-08-03 15:54:33.000000000 +0200') }
+        let(:options) { {from: "firstday", anchor: "yesterday"} }
+        its("from") { should eq Time.parse("2014-08-01 00:00:00.000000000 +0200") }
+        its("to") { should eq Time.parse("2014-08-03 15:54:33.000000000 +0200") }
       end
 
       context "each_period" do
-        let(:options) { { from: 'firstday', anchor: 'yesterday', to: 'today' } }
+        let(:options) { {from: "firstday", anchor: "yesterday", to: "today"} }
         it "should iterate over range by hour" do
           indices = []
           queries = []
@@ -100,13 +98,13 @@ describe Lstash::Query do
             indices << index
             queries << query
           end
-          expect(indices.count).to eq ((subject.to - subject.from)/3600).round
-          expect(indices.uniq).to eq %w(
+          expect(indices.count).to eq ((subject.to - subject.from) / 3600).round
+          expect(indices.uniq).to eq %w[
             logstash-2014.07.31
             logstash-2014.08.01
             logstash-2014.08.02
-          )
-          expect(queries.map(&:from).map(&:to_s)).to eq ([
+          ]
+          expect(queries.map(&:from).map(&:to_s)).to eq([
             "2014-07-31 22:00:00 UTC",
             "2014-07-31 23:00:00 UTC",
             "2014-08-01 00:00:00 UTC",
@@ -158,50 +156,46 @@ describe Lstash::Query do
           ])
         end
       end
-
     end
 
     context "search" do
       it "should produce the correct elasticsearch search request attributes" do
-        expect(subject.search(0, 10)).to eq ({
-          :sort => [{"@timestamp"=>{:order=>"asc"}}],
-          :fields => %w(message),
-          :query => {:filtered=>{
-            :query => { :bool => { :should => [ { :query_string => { :query=>"*" }}]}},
-            :filter=> { :bool => { :must   => [ { :range => { "@timestamp" => { :gte => 1407016800000, :lt => 1407074073000}}}]}}}},
-          :from => 0,
-          :size => 10
+        expect(subject.search(0, 10)).to eq({
+          sort: [{"@timestamp" => {order: "asc"}}],
+          fields: %w[message],
+          query: {filtered: {
+            query: {bool: {should: [{query_string: {query: "*"}}]}},
+            filter: {bool: {must: [{range: {"@timestamp" => {gte: 1407016800000, lt: 1407074073000}}}]}}
+          }},
+          from: 0,
+          size: 10
         })
       end
     end
-
   end
 
   context "running on 2014-08-01" do
-    let(:time)  { '2014-08-01 12:53:03' }
+    let(:time) { "2014-08-01 12:53:03" }
     let(:query_string) { nil }
     let(:options) { {} }
 
     subject { Lstash::Query.new(query_string, options) }
 
     before { Timecop.freeze(Time.parse(time)) }
-    after  { Timecop.return }
+    after { Timecop.return }
 
     context "from 'firstday' with 'yesterday' anchor" do
-      let(:options) { { anchor: 'yesterday', from: 'firstday' } }
+      let(:options) { {anchor: "yesterday", from: "firstday"} }
 
-        its('from') { should eq Time.parse('2014-07-01 00:00:00.000000000 +0200') }
-        its('to')   { should eq Time.parse('2014-08-01 12:53:03.000000000 +0200') }
+      its("from") { should eq Time.parse("2014-07-01 00:00:00.000000000 +0200") }
+      its("to") { should eq Time.parse("2014-08-01 12:53:03.000000000 +0200") }
     end
 
     context "from 'firstday' with default 'today' anchor" do
-      let(:options) { { from: 'firstday', to: 'now' } }
+      let(:options) { {from: "firstday", to: "now"} }
 
-        its('from') { should eq Time.parse('2014-08-01 00:00:00.000000000 +0200') }
-        its('to')   { should eq Time.parse('2014-08-01 12:53:03.000000000 +0200') }
+      its("from") { should eq Time.parse("2014-08-01 00:00:00.000000000 +0200") }
+      its("to") { should eq Time.parse("2014-08-01 12:53:03.000000000 +0200") }
     end
-
   end
-
 end
-
