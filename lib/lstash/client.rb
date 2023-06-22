@@ -98,8 +98,9 @@ module Lstash
         end
 
         method = :scroll
+
+        @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to.utc} count=#{offset}"
       end
-      @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to} count=#{offset}"
       @es_client.clear_scroll(body: scroll_params) unless scroll_params.empty?
     end
 
