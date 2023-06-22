@@ -70,8 +70,8 @@ module Lstash
         result = @es_client.send(method, {
           index: index,
           scroll: "5m",
-          body: (method == :search) ? query.search(offset, PER_PAGE) : nil
-        }.merge(scroll_params))
+          body: (method == :search) ? query.search(offset, PER_PAGE) : scroll_params
+        })
 
         validate_shards!(result["_shards"])
 
@@ -87,7 +87,7 @@ module Lstash
         method = :scroll
       end
       @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to} count=#{offset}"
-      @es_client.clear_scroll(scroll_params) unless scroll_params.empty?
+      @es_client.clear_scroll(body: scroll_params) unless scroll_params.empty?
     end
 
     def debug_logger
