@@ -85,7 +85,7 @@ describe Lstash::CLI do
         expect(es_client).to receive(:count).exactly(31 * 24).times.and_return("count" => 100)
 
         output = capture_stdout { Lstash::CLI.start(args) }
-        expect(output).to match("#{31 * 24 * 100}")
+        expect(output).to match((31 * 24 * 100).to_s)
       end
     end
 
@@ -101,7 +101,7 @@ describe Lstash::CLI do
         expect(es_client).to receive(:count).exactly(24).times.and_return("count" => 100)
 
         output = capture_stdout { Lstash::CLI.start(args) }
-        expect(output).to match("#{24 * 100}")
+        expect(output).to match((24 * 100).to_s)
       end
     end
   end
