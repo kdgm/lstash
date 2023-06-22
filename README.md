@@ -132,8 +132,8 @@ Usage:
 
 # connect to elasticsearch and create the Lstash client
 
-    elasticsearch = Elasticsearch::Client.new(url: 'log.mydomain.com')
-    client = Lstash::Client.new(elasticsearch)
+    elasticsearch = Elasticsearch::Client.new(url: ENV['ES_URL'])
+    client = Lstash::Client.new(elasticsearch, debug: true)
 
 # create the query
 
