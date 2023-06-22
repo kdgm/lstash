@@ -15,7 +15,7 @@ describe Lstash::Client do
   context "with query" do
     context "count" do
       it "should return number of messages matching query" do
-        query = Lstash::Query.new("*", from: Time.parse("2014-10-10 00:00"), to: Time.parse("2014-10-10 07:00"))
+        query = Lstash::Query.new("*", from: "2014-10-10 00:00", to: "2014-10-10 07:00")
 
         allow(es_client).to receive(:count).and_return(
           {"count" => 100},
@@ -33,7 +33,7 @@ describe Lstash::Client do
 
     context "grep" do
       it "should return the messages matching the query" do
-        query = Lstash::Query.new("*", from: Time.parse("2014-10-10 00:00"), to: Time.parse("2014-10-10 07:00"))
+        query = Lstash::Query.new("*", from: "2014-10-10 00:00", to: "2014-10-10 07:00")
 
         allow(es_client).to receive(:search).and_return(
           hits(%w[1]),
