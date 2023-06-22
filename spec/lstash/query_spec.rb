@@ -9,7 +9,7 @@ describe Lstash::Query do
 
     subject { Lstash::Query.new(query_string, options) }
 
-    before { Timecop.freeze(Time.parse(time)) }
+    before { Timecop.freeze(time) }
     after { Timecop.return }
 
     it { should_not be nil }
