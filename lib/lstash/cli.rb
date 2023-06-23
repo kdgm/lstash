@@ -70,7 +70,7 @@ module Lstash
 
     def run_command(query_string)
       es_client = ::Elasticsearch::Client.new(
-        url: options[:es_url] || ENV["ES_URL"] || "localhost",
+        url: options[:es_url] || ENV["ES_URL"] || "http://localhost:9200",
         log: ENV["DEBUG"] == "true",
         transport_options: {request: {timeout: TRANSPORT_REQUEST_TIMEOUT}}
       )
