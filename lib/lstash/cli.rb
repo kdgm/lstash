@@ -15,8 +15,8 @@ module Lstash
     class << self
       def shared_options
         method_option :anchor, banner: "YYYY-mm-dd", aliases: "-a", desc: "The 'firstday' is relative to this anchor date", default: "today"
-        method_option :from, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-f", desc: "Start date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "today"
-        method_option :to, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-t", desc: "End date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "now"
+        method_option :from, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-f", desc: "Start date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "yesterday"
+        method_option :to, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-t", desc: "End date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "today"
         method_option :es_url, banner: "http://localhost:9200", aliases: "-e", desc: "Elasticsearch URL or set ES_URL environment variable"
         method_option :debug, desc: "Log debugging info to stderr", aliases: "-d", type: :boolean, default: false
         method_option :wildcard, desc: "Use index wildcard to query all logstash-* indices (fast for count, slow for grep)", type: :boolean

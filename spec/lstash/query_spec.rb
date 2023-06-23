@@ -17,8 +17,8 @@ describe Lstash::Query do
     #   expect(subject).not_to be nil
     # end
 
-    its("from") { should eq Time.parse("2014-08-03 00:00:00 +0200") }
-    its("to") { should eq Time.parse("2014-08-03 15:54:33 +0200") }
+    its("from") { should eq Time.parse("2014-08-02 00:00:00 +0200") }
+    its("to") { should eq Time.parse("2014-08-03 00:00:00 +0200") }
 
     # its(:date_range) { should eq (Date.parse('2014-08-02')..Date.parse('2014-08-03')) }
 
@@ -86,7 +86,7 @@ describe Lstash::Query do
       context "date range" do
         let(:options) { {from: "firstday", anchor: "yesterday"} }
         its("from") { should eq Time.parse("2014-08-01 00:00:00 +0200") }
-        its("to") { should eq Time.parse("2014-08-03 15:54:33 +0200") }
+        its("to") { should eq Time.parse("2014-08-03 00:00:00 +0200") }
       end
 
       context "each_period" do
@@ -171,7 +171,7 @@ describe Lstash::Query do
                 }
               ],
               filter: {
-                range: {"@timestamp" => {gte: 1407016800000, lt: 1407074073000}}
+                range: {"@timestamp" => {gte: 1406930400000, lt: 1407016800000}}
               }
             }
           },
@@ -196,7 +196,7 @@ describe Lstash::Query do
       let(:options) { {anchor: "yesterday", from: "firstday"} }
 
       its("from") { should eq Time.parse("2014-07-01 00:00:00 +0200") }
-      its("to") { should eq Time.parse("2014-08-01 12:53:03 +0200") }
+      its("to") { should eq Time.parse("2014-08-01 00:00:00 +0200") }
     end
 
     context "from 'firstday' with default 'today' anchor" do

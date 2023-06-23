@@ -17,8 +17,8 @@ module Lstash
       @query_string = query_string
 
       @anchor = time_parse(arguments[:anchor], "today")
-      @from = time_parse(arguments[:from], "today")
-      @to = time_parse(arguments[:to], "now")
+      @from = time_parse(arguments[:from], "yesterday")
+      @to = time_parse(arguments[:to], "today")
 
       @to = Time.now if @to > Time.now # prevent accessing non-existing times / indices
     end
