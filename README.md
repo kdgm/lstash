@@ -153,7 +153,7 @@ Grep example
 
 1. Build the gem
 
-        $ gem build lstash.gem
+        $ gem build lstash
         Successfully built RubyGem
         Name: lstash
         Version: 0.2.0
