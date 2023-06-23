@@ -72,7 +72,7 @@ module Lstash
     def count_messages(index, query)
       result = @es_client.count(index: index, body: {query: query.filter})
       validate_shards!(result["_shards"])
-      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to.utc} count=#{result["count"]}"
+      @logger.debug "count index=#{index} from=#{query.from.utc} to=#{query.to.utc} count=#{result["count"]}"
       result["count"]
     end
 
@@ -101,7 +101,7 @@ module Lstash
 
         method = :scroll
 
-        @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to.utc} count=#{offset}"
+        @logger.debug "grep index=#{index} from=#{query.from.utc} to=#{query.to.utc} count=#{offset}"
       end
       @es_client.clear_scroll(body: scroll_params) unless scroll_params.empty?
     end
