@@ -64,9 +64,10 @@ module Lstash
     private
 
     def time_iterate(start_time, end_time, step, &block)
-      begin
+      while start_time < end_time
         yield(start_time)
-      end while (start_time += step) < end_time
+        start_time += step
+      end
     end
 
     def time_parse(time_or_string, default)
