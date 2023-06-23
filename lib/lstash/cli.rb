@@ -59,6 +59,12 @@ module Lstash
       end
     end
 
+    long_desc "Print the lstash version"
+    desc "version", "print lstash version"
+    def version
+      puts Lstash::VERSION
+    end
+
     private
 
     def run_command(query_string)
