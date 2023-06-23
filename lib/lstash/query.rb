@@ -27,7 +27,7 @@ module Lstash
       "#{LOGSTASH_PREFIX}#{date.strftime("%Y.%m.%d")}"
     end
 
-    def all_indices
+    def wildcard_indices
       "logstash-*"
     end
 

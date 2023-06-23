@@ -19,7 +19,7 @@ module Lstash
         method_option :to, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-t", desc: "End date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "now"
         method_option :es_url, banner: "http://localhost:9200", aliases: "-e", desc: "Elasticsearch URL or set ES_URL environment variable"
         method_option :debug, desc: "Log debugging info to stderr", aliases: "-d", type: :boolean, default: false
-        method_option :fast, desc: "Use wildcard to query all logstash-* indices", type: :boolean, default: false
+        method_option :wildcard, desc: "Use index wildcard to query all logstash-* indices (fast for count, slow for grep)", type: :boolean
       end
     end
   end
