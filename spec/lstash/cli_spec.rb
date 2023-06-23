@@ -74,7 +74,7 @@ describe Lstash::CLI do
     end
 
     context "with anchor date" do
-      let(:args) { %w[count program:haproxy --from firstday --to today --anchor yesterday] }
+      let(:args) { %w[count program:haproxy --from firstday --to today --anchor yesterday --no-wildcard] }
 
       it "should return correct count" do
         es_client = double("es_client")
@@ -90,7 +90,7 @@ describe Lstash::CLI do
     end
 
     context "without anchor date" do
-      let(:args) { %w[count program:haproxy --from yesterday --to today] }
+      let(:args) { %w[count program:haproxy --from yesterday --to today --no-wildcard] }
 
       it "should return correct count" do
         es_client = double("es_client")

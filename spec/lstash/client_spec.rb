@@ -3,7 +3,7 @@ require "lstash/client"
 
 describe Lstash::Client do
   let(:es_client) { double("es_client") }
-  subject { Lstash::Client.new(es_client) }
+  subject { Lstash::Client.new(es_client, wildcard: false) }
   before do
     allow(subject).to receive(:validate_shards!).and_return(true)
   end
