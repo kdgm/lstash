@@ -1,7 +1,7 @@
 require "spec_helper"
 require "lstash/cli"
 
-class Lstash::CLI < Thor
+class Lstash::CLI < Lstash::CLIBase
   def self.exit_on_failure?
     false
   end
