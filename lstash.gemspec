@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["k.j.wierenga@gmail.com"]
   spec.description = "Count or grep log messages in a specified time range from a Logstash Elasticsearch server."
   spec.summary = "The lstash gem allows you to count or grep log messages in a specific time range from a Logstash Elasticsearch server. "
-  spec.homepage = "https://github.com/kjwierenga/lstash"
+  spec.homepage = "https://github.com/kdgm/lstash"
   spec.license = "MIT"
 
   spec.files = `git ls-files`.split($/)
