@@ -1,5 +1,20 @@
 ## Release 1.0.0
 
+* BREAKING CHANGE: default options changed
+  * Default --from today changed to --from yesterday
+  * Default --to now changed to --to today
+  * This ensures that by default lstash counts or greps in yesterdays logging.
+* Fixed bug which caused empty range (e.g. --from today --to today) to incorrectly return non-zero count and logging.
+* Upgrade elasticsearch gem from version ~> 0.4 to ~> 7.17.7.
+* Update queries and field selectors to be compatible with Elasticsearch version 7.
+* Increase scroll step size for grep from 2 minutes to 1 hour (current Elasticsearch can handle it).
+* Add --wildcard / --no-wildcard option to use logstash-* wildcard instead of iterating over indices directly.
+  * For the count command --wildcard is faster so that's the default for count.
+  * For the grep command --no-wildcard is faster so that's the default for grep.
+* Dockerize development and add GitHub action for testing.
+* Moved repo from kdgm/lstash to kdgm/lstash.
+* Rubocop fixes
+
 ## Release 0.2.0
 
 Merge branch 'feature/fix/hashie-warnings' into develop
