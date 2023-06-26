@@ -4,7 +4,7 @@ ARG DISTRO_NAME=buster
 
 FROM ruby:$RUBY_VERSION-slim-$DISTRO_NAME
 
-LABEL maintainer="support@kerkdienstgemist.nl"
+LABEL maintainer="k.j.wierenga@kerkdienstgemist.nl"
 
 # Install dependencies specified in Aptfile
 COPY Aptfile /tmp/
