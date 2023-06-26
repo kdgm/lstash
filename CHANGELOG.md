@@ -1,3 +1,6 @@
+## Release 1.0.0
+
+
 ## Release 0.2.0
 
 Merge branch 'feature/fix/hashie-warnings' into develop
