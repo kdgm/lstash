@@ -1,24 +1,30 @@
 # external dependencies
-require 'thor'
-require 'uri'
-require 'elasticsearch'
+require "thor"
+require "uri"
+require "elasticsearch"
 
 # local files we need
-require 'lstash/query'
-require 'lstash/client'
+require "lstash/query"
+require "lstash/client"
+require "lstash/version"
 
 module Lstash
+  TRANSPORT_REQUEST_TIMEOUT = 120 # 2 minute request timeout
 
-  TRANSPORT_REQUEST_TIMEOUT = 120.freeze # 2 minute request timeout
+  class CLIBase < Thor
+    class << self
+      def shared_options
+        method_option :anchor, banner: "YYYY-mm-dd", aliases: "-a", desc: "The 'firstday' is relative to this anchor date", default: "today"
+        method_option :from, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-f", desc: "Start date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "yesterday"
+        method_option :to, banner: "YYYY-mm-dd [HH:MM:SS]", aliases: "-t", desc: "End date/time, 'now', 'today', 'yesterday', or 'firstday'", default: "today"
+        method_option :es_url, banner: "http://localhost:9200", aliases: "-e", desc: "Elasticsearch URL or set ES_URL environment variable"
+        method_option :debug, desc: "Log debugging info to stderr", aliases: "-d", type: :boolean, default: false
+        method_option :wildcard, desc: "Use index wildcard to query all logstash-* indices (fast for count, slow for grep)", type: :boolean
+      end
+    end
+  end
 
-  class CLI < Thor
-
-    class_option :from,   :banner => 'start of time range', :aliases => '-f', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
-    class_option :to,     :banner => 'end of time range',   :aliases => '-t', :desc => "date/time, 'now', 'today', 'yesterday', or 'firstday'"
-    class_option :anchor, :banner => 'anchor date/time',    :aliases => '-a', :desc => "used as reference date for firstday"
-    class_option :es_url, :banner => 'Elasticsearch endpoint for Logstash', :aliases => '-e', :desc => "or ES_URL environment variable"
-    class_option :debug,  :banner => 'debug log to stderr', :aliases => '-d', :type => :boolean
-
+  class CLI < CLIBase
     long_desc <<-LONGDESC
       Grep log messages matching the QUERY from Logstash in ascending timestamp order
       and output to stdout. QUERY can use Apache Lucene query parser syntax.
@@ -27,7 +33,8 @@ module Lstash
 
         lstash grep 'program:haproxy' --from firstday --to now
     LONGDESC
-    desc "grep QUERY", "grep log messages from Logstash"
+    desc "grep QUERY", "Grep log messages from Logstash"
+    shared_options
     def grep(query_string)
       run_command(query_string) do |es_client, query|
         Lstash::Client.new(es_client, options).grep(query) do |message|
@@ -44,7 +51,8 @@ module Lstash
 
         lstash count 'program:haproxy' --from firstday --to today --anchor yesterday
     LONGDESC
-    desc "count QUERY", "count number of log messages matching the QUERY"
+    desc "count QUERY", "Count number of log messages matching the QUERY"
+    shared_options
     def count(query_string)
       run_command(query_string) do |es_client, query|
         count = Lstash::Client.new(es_client, options).count(query)
@@ -52,29 +60,34 @@ module Lstash
       end
     end
 
+    long_desc "Print the lstash version"
+    desc "version", "print lstash version"
+    def version
+      puts Lstash::VERSION
+    end
+
     private
 
     def run_command(query_string)
       es_client = ::Elasticsearch::Client.new(
-        url: options[:es_url] || ENV['ES_URL'] || 'localhost',
-        log: !!ENV['DEBUG'],
-        transport_options: { request: { timeout: TRANSPORT_REQUEST_TIMEOUT } }
+        url: options[:es_url] || ENV["ES_URL"] || "http://localhost:9200",
+        log: ENV["DEBUG"] == "true",
+        transport_options: {request: {timeout: TRANSPORT_REQUEST_TIMEOUT}}
       )
-      query  = Lstash::Query.new(query_string, options)
+      query = Lstash::Query.new(query_string, options)
 
       yield es_client, query
-
-    rescue Exception => e
+    rescue => e
       options[:debug] ? raise(e) : raise(Thor::Error.new(e.message))
     end
 
-    protected
-
     # Make sure we exit on failure with an error code
-    def self.exit_on_failure?
-      true
+    class << self
+      protected
+
+      def exit_on_failure?
+        true
+      end
     end
-
   end
-
 end

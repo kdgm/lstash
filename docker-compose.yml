@@ -16,6 +16,7 @@ x-base: &base
     HISTFILE: /usr/local/hist/.bash_history
     IRB_HISTFILE: /usr/local/hist/.irb_history
     EDITOR: ${EDITOR:-vi}
+    ES_URL: http://host.docker.internal:9200
 
 services:
   runner:

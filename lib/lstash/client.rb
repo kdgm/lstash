@@ -1,48 +1,65 @@
-require 'logger'
-require 'date'
-require 'hashie'
+require "logger"
+require "date"
 
 class NullLogger < Logger
-  def initialize(*args); end
-  def add(*args, &block); end
+  def initialize(*args)
+  end
+
+  def add(*args, &block)
+  end
 end
 
 module Lstash
-
   class Client
-
     class ConnectionError < StandardError; end
 
-    PER_PAGE = 5000.freeze # best time, lowest resource usage
-    DEFAULT_COUNT_STEP = 3600.freeze # 1 hour
-    DEFAULT_GREP_STEP  = 120.freeze  # 2 minutes
+    class ShardMismatchError < StandardError; end
+
+    PER_PAGE = 5000 # best time, lowest resource usage
+    COUNT_STEP = 3600 # 1 hours
+    GREP_STEP = 3600 # 1 hour
 
     def initialize(es_client, options = {})
       raise ConnectionError, "No elasticsearch client specified" if es_client.nil?
 
       @es_client = es_client
-      @logger    = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
+      @logger = options[:logger] || (options[:debug] ? debug_logger : NullLogger.new)
+      @wildcard = options[:wildcard]
     end
 
-    def count(query, step = DEFAULT_COUNT_STEP)
+    def count(query)
       @logger.debug "count from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_period(step) do |index, hour_query|
-        count += count_messages(index, hour_query)
+      use_wildcard = @wildcard.nil? ? true : @wildcard
+      if use_wildcard
+        count = count_messages(query.wildcard_indices, query)
+      else
+        count = 0
+        query.each_period(COUNT_STEP) do |index, hour_query|
+          count += count_messages(index, hour_query)
+        end
       end
       @logger.debug "total count=#{count}"
       count
     end
 
-    def grep(query, step = DEFAULT_GREP_STEP)
+    def grep(query)
       @logger.debug "grep from=#{query.from} to=#{query.to}"
 
       count = 0
-      query.each_period(step) do |index, hour_query|
-        grep_messages(index, hour_query) do |message|
+      use_wildcard = @wildcard.nil? ? false : @wildcard
+      if use_wildcard
+        grep_messages(query.wildcard_indices, query) do |message|
           count += 1
           yield message if block_given?
+        end
+      else
+        query.each_period(GREP_STEP) do |index, hour_query|
+          grep_messages(index, hour_query) do |message|
+            count += 1
+            yield message if block_given?
+          end
         end
       end
 
@@ -53,12 +70,10 @@ module Lstash
     private
 
     def count_messages(index, query)
-      result = Hashie::Mash.new @es_client.send(:count,
-        index: index,
-        body:  query.filter
-      )
-      @logger.debug "count index=#{index} from=#{query.from} to=#{query.to} count=#{result['count']}"
-      result['count']
+      result = @es_client.count(index: index, body: {query: query.filter})
+      validate_shards!(result["_shards"])
+      @logger.debug "count index=#{index} from=#{query.from.utc} to=#{query.to.utc} count=#{result["count"]}"
+      result["count"]
     end
 
     def grep_messages(index, query)
@@ -66,37 +81,43 @@ module Lstash
       scroll_params = {}
       offset = 0
       method = :search
-      while (messages.nil? || messages.count > 0) do
-        result = Hashie::Mash.new @es_client.send(method, {
-          index:  index,
-          scroll: '5m',
-          body:   query.search(offset, PER_PAGE),
-        }.merge(scroll_params))
+      while messages.nil? || messages.count > 0
+        result = @es_client.send(method, {
+          index: index,
+          scroll: "5m",
+          body: (method == :search) ? query.search(offset, PER_PAGE) : scroll_params
+        })
 
-        messages = result.hits.hits
+        validate_shards!(result["_shards"])
 
+        messages = result["hits"]["hits"]
         offset += messages.count
-        scroll_params = {scroll_id: result._scroll_id}
+        scroll_params = {scroll_id: result["_scroll_id"]}
 
         messages.each do |h|
-          next if h.fields.nil?
-          yield h.fields.message if block_given?
+          next if h["_source"].nil?
+          yield h["_source"]["message"] if block_given?
         end
 
         method = :scroll
+
+        @logger.debug "grep index=#{index} from=#{query.from.utc} to=#{query.to.utc} count=#{offset}"
       end
-      @logger.debug "grep index=#{index} from=#{query.from} to=#{query.to} count=#{offset}"
-      Hashie::Mash.new @es_client.clear_scroll(scroll_params)
+      @es_client.clear_scroll(body: scroll_params) unless scroll_params.empty?
     end
 
     def debug_logger
-      logger = Logger.new(STDERR)
+      logger = Logger.new($stderr)
       logger.formatter = proc do |severity, datetime, progname, msg|
         "#{datetime} #{msg}\n"
       end
       logger
     end
 
+    def validate_shards!(shards)
+      if shards["total"] != shards["successful"]
+        raise ShardMismatchError, "Shard mismatch: total: #{shards["total"]}, successful: #{shards["successful"]}"
+      end
+    end
   end
-
 end

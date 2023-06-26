@@ -1,4 +1,6 @@
 # development only package dependencies
 build-essential
+curl
+jq
 git
 vim

@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'lstash/cli'
+require "lstash/cli"
 
-# Suppress Hashie warnings
-Hashie.logger = Logger.new(nil)
 Lstash::CLI.start(ARGV)
